@@ -1,0 +1,16 @@
+{
+    "name": "nodeintializer",
+    "version": "1.0.0",
+    "description": "",
+    "main": "app.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "express": "^4.17.1",
+        "js-beautify": "^1.13.0",
+        "pluralize": "^8.0.0"
+    }
+}

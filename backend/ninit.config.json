@@ -1,0 +1,23 @@
+{
+    "src":{
+        "controllers":{
+            "user.controllers.js":{
+                "imports":null,
+                "functions":""
+            }
+        },
+        "config":{
+            "mongodb.js":null
+        },
+        "middlewares":{
+            "auth.js":null
+        },
+        "models":{
+            "user.model.js":null
+        },
+        "routes":{
+            "user.routes.js":null
+        }
+    },
+    "server.js":null
+}
