@@ -26,6 +26,7 @@ exports.createController = (schema, projectPath, jsonData) => {
   
   exports.create${modelName} = (req, res, next) =>{
     const ${schemaName} = new ${modelName}({
+      _id: mongoose.Types.ObjectId(),
       ...req.body
     })
     ${schemaName}.save()
@@ -38,7 +39,7 @@ exports.createController = (schema, projectPath, jsonData) => {
   }
   
   exports.get${modelName}ById = (req, res, next) =>{
-    ${schemaName}.findById(req.params.id)
+    ${modelName}.findById(req.params.id)
     .then((data)=>{
       res.status(200).json(data);
     })
@@ -48,7 +49,7 @@ exports.createController = (schema, projectPath, jsonData) => {
   }
 
   exports.delete${modelName}ById = (req, res, next) =>{
-    ${schemaName}.remove({_id: req.params.id})
+    ${modelName}.remove({_id: req.params.id})
     .then((data)=>{
       res.status(200).json(data);
     })
@@ -58,7 +59,7 @@ exports.createController = (schema, projectPath, jsonData) => {
   }
 
   exports.update${modelName} = (req,res,next) =>{
-    ${schemaName}.findByIdAndUpdate(req.params.id, req.body, {
+    ${modelName}.findByIdAndUpdate(req.params.id, req.body, {
       new: true
     }).then((data)=>{
       res.status(200).json(data);

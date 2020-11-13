@@ -63,6 +63,9 @@ const mkdirs = (obj, path) => {
         if (filePath[filePath.length - 1] == "js") {
           fs.writeFileSync(tempPath);
         }
+        if (filePath[filePath.length - 1] == "json") {
+          fs.writeFileSync(tempPath);
+        }
       }
     });
   }
@@ -78,9 +81,19 @@ mkdirs(jsonData.structure, projectPath);
 const createModel = require("./utils/createModel").createModel;
 const createController = require("./utils/createController").createController;
 const createRoute = require("./utils/createRoute").createRoute;
+const createApp = require("./utils/createApp").createApp;
+const createServer = require("./utils/createServer").createServer;
+const createConfig = require("./utils/createConfig").createConfig;
+const createPackage = require("./utils/createPackage").createPackage;
+
 // CREATING ALL FILES(as of now just model file)
 Object.keys(jsonData.schemas).forEach((schema) => {
   createModel(schema, projectPath, jsonData);
   createController(schema, projectPath, jsonData);
   createRoute(schema, projectPath, jsonData);
 });
+
+createApp(projectPath, jsonData);
+createServer(projectPath);
+createConfig(projectPath);
+createPackage(projectPath);
