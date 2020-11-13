@@ -84,6 +84,11 @@ mkdirs(jsonData.structure, projectPath);
 Object.keys(jsonData.schemas).forEach((schema) => {
   const schemaName = pluralize.singular(schema).toLocaleLowerCase();
   const schemaPath = `${projectPath}/src/models/${schemaName}.model.js`;
+  const controllerPath = `${projectPath}/src/controllers/${schemaName}.controllers.js`;
+  const routePath = `${projectPath}/src/routes/${schemaName}.routes.js`;
+
+  //Constants
+  const modelName = schemaName.charAt(0).toUpperCase() + schemaName.slice(1);
 
   // Defining entities for the schema
   let entities = "";
@@ -93,7 +98,7 @@ Object.keys(jsonData.schemas).forEach((schema) => {
       `${entity.name}:{type: String,required:${entity.required},unique:${entity.unique}},`;
   });
 
-  // File content
+  // File content model
   const fileContent = `const mongoose = require('mongoose')
 
     const ${schemaName}Schema = mongoose.Schema({
@@ -101,13 +106,50 @@ Object.keys(jsonData.schemas).forEach((schema) => {
         ${entities}
     })
 
-    module.exports = mongoose.model('${
-      schemaName.charAt(0).toUpperCase() + schemaName.slice(1)
-    }',${schemaName}Schema)`;
+    module.exports = mongoose.model('${modelName}',${schemaName}Schema)`;
 
-  // Writing to the file
+  // Writing to the model file
   fs.writeFileSync(
     schemaPath,
     beautify(fileContent, { indent_size: 2, space_in_empty_paren: true })
+  );
+
+  //File content controllers
+  const controllerFileContent = `const mongoose = require('mongoose')
+  
+  const ${modelName} = require('../models/${schemaName}.model.js')
+  
+  exports.getAll${
+    schema.charAt(0).toUpperCase() + schema.substring(1)
+  } = (req, res, next) =>{
+    ${modelName}.find()
+    .then((data)=>{
+      res.status(200).json(data);
+    })
+    .catch((err)=>{
+      res.status(500).json(err);
+    })
+  }
+  
+  exports.create${modelName} = (req, res, next) =>{
+    const ${schemaName} = new ${modelName}({
+      ...req.body
+    })
+    ${schemaName}.save()
+    .then((data)=>{
+      res.status(200).json(data);
+    })
+    .catch((err)=>{
+      res.status(500).json(err);
+    })
+  }`;
+
+  // Writing to the controller file
+  fs.writeFileSync(
+    controllerPath,
+    beautify(controllerFileContent, {
+      indent_size: 2,
+      space_in_empty_paren: true,
+    })
   );
 });
