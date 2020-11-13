@@ -10,11 +10,10 @@ const jsonData = {
       models: {},
       routes: {},
     },
-    "app.js": null,
     "server.js": null,
+    "app.js": null,
     "package.json": null,
   },
-  "server.js": null,
   schemas: {
     Users: {
       name: "Users",
@@ -22,25 +21,25 @@ const jsonData = {
         {
           name: "username",
           required: true,
-          unique: false,
+          unique: true,
         },
         {
-          name: "email",
+          name: "password",
           required: true,
-          unique: true,
+          unique: false,
         },
       ],
     },
-    Blogs: {
-      name: "Blogs",
+    Orders: {
+      name: "Orders",
       entities: [
         {
-          name: "title",
+          name: "orderId",
           required: true,
           unique: true,
         },
         {
-          name: "content",
+          name: "productId",
           required: true,
           unique: false,
         },
@@ -48,7 +47,6 @@ const jsonData = {
     },
   },
   languge: "node",
-  framework: "express",
 };
 
 // CREATING DIRECTORIES

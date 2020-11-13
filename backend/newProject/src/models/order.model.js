@@ -1,17 +1,17 @@
 const mongoose = require('mongoose')
 
-const blogSchema = mongoose.Schema({
+const orderSchema = mongoose.Schema({
   _id: mongoose.Schema.Types.ObjectId,
-  title: {
+  orderId: {
     type: String,
     required: true,
     unique: true
   },
-  content: {
+  productId: {
     type: String,
     required: true,
     unique: false
   },
 })
 
-module.exports = mongoose.model('Blog', blogSchema)
+module.exports = mongoose.model('Order', orderSchema)
