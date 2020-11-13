@@ -13,7 +13,7 @@ exports.createController = (schema, projectPath, jsonData) => {
   const ${modelName} = require('../models/${schemaName}.model.js')
   
   exports.getAll${
-    schema.charAt(0).toUpperCase() + schema.substring(1)
+    schema.charAt(0).toUpperCase() + schema.slice(1)
   } = (req, res, next) =>{
     ${modelName}.find()
     .then((data)=>{
@@ -35,7 +35,41 @@ exports.createController = (schema, projectPath, jsonData) => {
     .catch((err)=>{
       res.status(500).json(err);
     })
-  }`;
+  }
+  
+  exports.get${modelName}ById = (req, res, next) =>{
+    ${schemaName}.findById(req.params.id)
+    .then((data)=>{
+      res.status(200).json(data);
+    })
+    .catch((err)=>{
+      res.status(500).json(err);
+    })
+  }
+
+  exports.delete${modelName}ById = (req, res, next) =>{
+    ${schemaName}.remove({_id: req.params.id})
+    .then((data)=>{
+      res.status(200).json(data);
+    })
+    .catch((err)=>{
+      res.status(500).json(err);
+    })
+  }
+
+  exports.update${modelName} = (req,res,next) =>{
+    ${schemaName}.findByIdAndUpdate(req.params.id, req.body, {
+      new: true
+    }).then((data)=>{
+      res.status(200).json(data);
+    })
+    .catch((err)=>{
+      res.status(500).json(err);
+    })
+  }
+  `;
+
+  //
 
   // Writing to the controller file
   fs.writeFileSync(

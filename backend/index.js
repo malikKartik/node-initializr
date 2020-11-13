@@ -77,8 +77,10 @@ mkdirs(jsonData.structure, projectPath);
 
 const createModel = require("./utils/createModel").createModel;
 const createController = require("./utils/createController").createController;
+const createRoute = require("./utils/createRoute").createRoute;
 // CREATING ALL FILES(as of now just model file)
 Object.keys(jsonData.schemas).forEach((schema) => {
   createModel(schema, projectPath, jsonData);
   createController(schema, projectPath, jsonData);
+  createRoute(schema, projectPath, jsonData);
 });
