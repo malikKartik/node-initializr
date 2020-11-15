@@ -23,12 +23,13 @@ exports.createController = (schema, projectPath, jsonData) => {
   }`;
 
   // IMPORTS
-  if (jsonData.schemas.Users.auth) {
+  if (jsonData.schemas.Users && jsonData.schemas.Users.auth) {
     imports =
       imports +
       `const bcrypt = require("bcrypt");
   const jwt = require("jsonwebtoken");`;
 
+    // SIGNUP, LOGIN AND LOGOUT CONTROLLERS
     theCreateController = `exports.create${modelName} = (req, res, next) =>{
   ${modelName}.find({ email: req.body.email }).then((data) => {
     if (data.length >= 1) {
@@ -77,7 +78,26 @@ exports.createController = (schema, projectPath, jsonData) => {
           message: "Auth failed!",
         });
       }
-      res.send({})
+      bcrypt.compare(req.body.password, user[0].password, (err, result) => {
+        if (result) {
+          const token = jwt.sign(
+            {
+              email: user[0].email,
+              userId: user[0]._id,
+            },
+            process.env.JWT_KEY || "key"
+          );
+          res.cookie("jwt", token, {
+            httpOnly: true,
+          });
+          let responseUser = {...user[0]._doc,token:token}
+          delete responseUser["password"]
+          return res.send(responseUser)
+        }
+        return res.status(401).json({
+          message: "Auth failed!",
+        });
+      })
     }).catch((e) => {
       console.log(e);
       res.status(500).json({

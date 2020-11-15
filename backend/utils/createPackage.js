@@ -4,7 +4,7 @@ const fs = require("fs");
 exports.createPackage = (projectPath, jsonData) => {
   const packagePath = `${projectPath}/package.json`;
   let packages = "";
-  if (jsonData.schemas.Users.auth) {
+  if (jsonData.schemas.Users && jsonData.schemas.Users.auth) {
     packages =
       packages +
       `"bcrypt": "",

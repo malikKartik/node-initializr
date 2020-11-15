@@ -9,6 +9,13 @@ exports.createRoute = (schema, projectPath, jsonData) => {
   //Constants
   const modelName = schemaName.charAt(0).toUpperCase() + schemaName.slice(1);
   const controllerName = `${schemaName}Controller`;
+
+  // Routes
+  let routes = "";
+  if (jsonData.schemas.Users && jsonData.schemas.Users.auth) {
+    routes = routes + `router.post('/login', ${controllerName}.login);`;
+  }
+
   //File content routes
   const routeFileContent = `const express = require("express");
   const router = express.Router();
@@ -21,6 +28,7 @@ exports.createRoute = (schema, projectPath, jsonData) => {
   router.post("/", ${controllerName}.create${modelName});
   router.delete("/:id",  ${controllerName}.delete${modelName}ById);
   router.patch("/:id", ${controllerName}.update${modelName});
+  ${routes}
 
 module.exports = router;`;
 
