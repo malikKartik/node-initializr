@@ -14,6 +14,7 @@ const jsonData = {
   schemas: {
     Users: {
       name: "Users",
+      auth: true,
       entities: [
         {
           name: "username",
@@ -85,6 +86,7 @@ const createApp = require("./utils/createApp").createApp;
 const createServer = require("./utils/createServer").createServer;
 const createConfig = require("./utils/createConfig").createConfig;
 const createPackage = require("./utils/createPackage").createPackage;
+const createMiddleWare = require("./utils/createMiddleware");
 
 // CREATING ALL FILES(as of now just model file)
 Object.keys(jsonData.schemas).forEach((schema) => {
@@ -96,4 +98,6 @@ Object.keys(jsonData.schemas).forEach((schema) => {
 createApp(projectPath, jsonData);
 createServer(projectPath);
 createConfig(projectPath);
-createPackage(projectPath);
+createPackage(projectPath, jsonData);
+if (jsonData.schemas.Users && jsonData.schemas.Users.auth)
+  createMiddleWare.createAuthMiddleware(projectPath, jsonData);

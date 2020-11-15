@@ -55,9 +55,66 @@ const App = () => {
           <input
             type="text"
             value={table.name}
-            onChange={(e) => setTable({ ...table, name: e.target.value })}
+            onChange={(e) => {
+              if (e.target.value === "Users") {
+                setTable({
+                  ...table,
+                  name: e.target.value,
+                  auth: false,
+                  token: "body",
+                });
+              } else {
+                setTable({ ...table, name: e.target.value });
+              }
+            }}
           />
           <br />
+          {table.name === "Users" ? (
+            <>
+              <label>Enable Authentication: </label>
+              <input
+                type="checkbox"
+                checked={table.auth === undefined ? false : table.auth}
+                onChange={(e) => {
+                  setTable({ ...table, token: "cookies" });
+                  setTable({ ...table, auth: e.target.checked });
+                }}
+              />
+              <br />
+            </>
+          ) : null}
+          {table.auth ? (
+            <>
+              <p>How do you want the token?</p>
+              <label>Cookies: </label>
+              <input
+                type="checkbox"
+                checked={
+                  table.token === undefined
+                    ? false
+                    : table.token === "cookies"
+                    ? true
+                    : false
+                }
+                onChange={(e) => {
+                  setTable({ ...table, token: "cookies" });
+                }}
+              />
+              <label>Body: </label>
+              <input
+                type="checkbox"
+                checked={
+                  table.token === undefined
+                    ? false
+                    : table.token === "body"
+                    ? true
+                    : false
+                }
+                onChange={(e) => setTable({ ...table, token: "body" })}
+              />
+              <br />
+            </>
+          ) : null}
           <label>Entity name:</label>
           <input
             type="text"
