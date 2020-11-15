@@ -1,7 +1,35 @@
 import React, { useState } from "react";
 import "./App.css";
+import CentralHeading from "./components/centralHeading/CentralHeading";
+import LanguageSection from "./components/languageSection/LanguageSection";
+import SectionBreak from "./components/sectionBreak/SectionBreak";
+import DatabaseSection from "./components/databaseSection/DatabaseSection";
+import PackageSection from "./components/packageSection/PackageSection";
+import nodejsActive from "./assets/images/nodejsActive.svg";
+import nodejsInactive from "./assets/images/nodejsInactive.svg";
+import javaInactive from "./assets/images/javaInactive.svg";
 
 const App = () => {
+  const [languages, setLanguages] = useState([
+    {
+      label: "Node.js",
+      selectedImage: <img src={nodejsActive}></img>,
+      unselectedImage: <img src={nodejsInactive}></img>,
+      disabled: true,
+      selectedLabelColor: "#539E43",
+      selected: true,
+      value: "node",
+    },
+    {
+      label: "Coming soon...",
+      selectedImage: "",
+      unselectedImage: <img src={javaInactive}></img>,
+      disabled: true,
+      selectedLabelColor: "",
+      selected: false,
+      value: "java",
+    },
+  ]);
   const [config, setConfig] = useState({
     structure: {
       src: {
@@ -16,162 +44,123 @@ const App = () => {
     "app.js": null,
     "package.json": null,
     schemas: {},
+    language: "node",
+    database: "mongodb",
+    packages: ["express", "mongoose"],
   });
 
-  const [table, setTable] = useState({ name: "", entities: [] });
-  const [entity, setEntity] = useState({
-    name: "",
-    required: false,
-    unique: false,
-  });
-  const [tables, setTables] = useState([]);
+  const [packages, setPackages] = useState([
+    {
+      title: "Express",
+      description: `Fast, unopinionated, minimalist web framework for node.`,
+      value: "express",
+      selected: true,
+      disabled: true,
+    },
+    {
+      title: "Mongoose",
+      description: "Mongoose is a MongoDB object modeling tool.",
+      value: "mongoose",
+      selected: true,
+      disabled: true,
+    },
+    {
+      title: "Bcrypt",
+      description: "A library to help you hash passwords.",
+      value: "bcrypt",
+      selected: false,
+      disabled: false,
+    },
+    {
+      title: "JWT",
+      description: "An implementation of JSON Web Tokens.",
+      value: "jsonwebtoken",
+      selected: false,
+      disabled: false,
+    },
+    {
+      title: "Axios",
+      description: "Promise based HTTP client for the browser and node.js.",
+      value: "axios",
+      selected: false,
+      disabled: false,
+    },
+    {
+      title: "UUID",
+      description: "For the creation of RFC4122 UUIDs",
+      value: "uuid",
+      selected: false,
+      disabled: false,
+    },
+    {
+      title: "Yargs",
+      description:
+        "Yargs be a node.js library fer hearties tryin' ter parse optstrings",
+      value: "yargs",
+      selected: false,
+      disabled: false,
+    },
+  ]);
+
+  const languageSelectionHandler = (value) => {
+    let tempLanguages = [...languages];
+    tempLanguages.forEach((language) => {
+      if (language.value === value) {
+        language.selected = !language.selected;
+        if (language.selected)
+          setConfig({
+            ...config,
+            language: value,
+          });
+      }
+    });
+    setLanguages(tempLanguages);
+  };
+
+  const packageSelectionHandler = async (value) => {
+    let tempPackages = [...packages];
+    await tempPackages.forEach((pack) => {
+      if (pack.value === value) {
+        pack.selected = !pack.selected;
+        if (pack.selected)
+          setConfig({
+            ...config,
+            packages: config.packages.concat(value),
+          });
+        else {
+          let toBeSpliced = [...config.packages];
+          let index = config.packages.indexOf(value);
+          if (index !== -1) {
+            toBeSpliced.splice(index, 1);
+            setConfig({
+              ...config,
+              packages: toBeSpliced,
+            });
+          }
+        }
+      }
+    });
+    await setPackages(tempPackages);
+    console.log(config);
+  };
 
   return (
-    <div className="App">
-      <div className="config-display">
-        <div>
-          <h3>Select Language:</h3>
-          <div
-            className="to-select"
-            onClick={() => setConfig({ ...config, languge: "node" })}
-          >
-            Nodejs
-          </div>
-        </div>
-        <div>
-          <h3>Select a library:</h3>
-          <div
-            className="to-select"
-            onClick={() => setConfig({ ...config, framework: "express" })}
-          >
-            Express
-          </div>
-        </div>
-        <div>
-          <h3>Create schema:</h3>
-          <br />
-          {/* TODO: Check for collection name, it should be plural */}
-          <label>Collection or table name:</label>
-          <input
-            type="text"
-            value={table.name}
-            onChange={(e) => {
-              if (e.target.value === "Users") {
-                setTable({
-                  ...table,
-                  name: e.target.value,
-                  auth: false,
-                  token: "body",
-                });
-              } else {
-                setTable({ ...table, name: e.target.value });
-              }
-            }}
-          />
-          <br />
-          {table.name === "Users" ? (
-            <>
-              <label>Enable Authentication: </label>
-              <input
-                type="checkbox"
-                checked={table.auth === undefined ? false : table.auth}
-                onChange={(e) => {
-                  setTable({ ...table, token: "cookies" });
-                  setTable({ ...table, auth: e.target.checked });
-                }}
-              />
-              <br />
-            </>
-          ) : null}
-          {table.auth ? (
-            <>
-              <p>How do you want the token?</p>
-              <label>Cookies: </label>
-              <input
-                type="checkbox"
-                checked={
-                  table.token === undefined
-                    ? false
-                    : table.token === "cookies"
-                    ? true
-                    : false
-                }
-                onChange={(e) => {
-                  setTable({ ...table, token: "cookies" });
-                }}
-              />
-              <label>Body: </label>
-              <input
-                type="checkbox"
-                checked={
-                  table.token === undefined
-                    ? false
-                    : table.token === "body"
-                    ? true
-                    : false
-                }
-                onChange={(e) => setTable({ ...table, token: "body" })}
-              />
-              <br />
-            </>
-          ) : null}
-          <label>Entity name:</label>
-          <input
-            type="text"
-            value={entity.name}
-            onChange={(e) => setEntity({ ...entity, name: e.target.value })}
-          />
-          <br />
-
-          {/* TODO: Add entity type select as dropdown */}
-          <label>Required: </label>
-          <input
-            type="checkbox"
-            checked={entity.required}
-            onChange={(e) =>
-              setEntity({ ...entity, required: e.target.checked })
-            }
-          />
-          <label>Unique: </label>
-          <input
-            type="checkbox"
-            checked={entity.unique}
-            onChange={(e) => setEntity({ ...entity, unique: e.target.checked })}
-          />
-
-          <br />
-          <button
-            onClick={() => {
-              let tempTable = { ...table };
-              tempTable.entities.push(entity);
-              setTable(tempTable);
-              setEntity({
-                name: "",
-                required: false,
-                unique: false,
-              });
-            }}
-          >
-            +
-          </button>
-          <br />
-          <button
-            onClick={() => {
-              let tempTables = [...tables];
-              tempTables.push(table);
-              setTables(tempTables);
-              setConfig({
-                ...config,
-                schemas: { ...config.schemas, [table.name]: table },
-              });
-              setTable({ name: "", entities: [] });
-            }}
-          >
-            +
-          </button>
-        </div>
-        <pre>{JSON.stringify(config, null, 4)}</pre>
-      </div>
+    <div style={{ marginLeft: "5%", marginRight: "5%" }}>
+      <CentralHeading></CentralHeading>
+      <SectionBreak></SectionBreak>
+      <LanguageSection
+        data={languages}
+        languageSelectionHandler={languageSelectionHandler}
+      ></LanguageSection>
+      <SectionBreak></SectionBreak>
+      <DatabaseSection></DatabaseSection>
+      <SectionBreak></SectionBreak>
+      <PackageSection
+        data={packages}
+        packageSelectionHandler={packageSelectionHandler}
+      ></PackageSection>
+      <SectionBreak></SectionBreak>
+      {config.packages}
     </div>
   );
 };

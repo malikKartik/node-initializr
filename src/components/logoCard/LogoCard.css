@@ -1,0 +1,15 @@
+.logo-card-container {
+  margin-right: 50px;
+  height: 130px;
+}
+
+.logo-card {
+  height: 100px;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+}
+
+.logocard-label {
+  text-align: center;
+}
