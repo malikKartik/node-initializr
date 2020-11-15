@@ -1,8 +1,16 @@
 const beautify = require("js-beautify").js;
 const fs = require("fs");
 
-exports.createPackage = (projectPath) => {
+exports.createPackage = (projectPath, jsonData) => {
   const packagePath = `${projectPath}/package.json`;
+  let packages = "";
+  if (jsonData.schemas.Users.auth) {
+    packages =
+      packages +
+      `"bcrypt": "",
+    "jsonwebtoken": "",
+    `;
+  }
   const packageContent = `
   {
     "name": "newproject",
@@ -15,6 +23,7 @@ exports.createPackage = (projectPath) => {
     "author": "",
     "license": "ISC",
     "dependencies": {
+        ${packages}
         "express": "",
         "mongoose": ""
     }

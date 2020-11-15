@@ -7,8 +7,89 @@ exports.createController = (schema, projectPath, jsonData) => {
   const controllerPath = `${projectPath}/src/controllers/${schemaName}.controllers.js`;
   //Constants
   const modelName = schemaName.charAt(0).toUpperCase() + schemaName.slice(1);
+  let imports = "";
+  let theCreateController = `exports.create${modelName} = (req, res, next) =>{
+    const ${schemaName} = new ${modelName}({
+      _id: mongoose.Types.ObjectId(),
+      ...req.body
+    })
+    ${schemaName}.save()
+    .then((data)=>{
+      res.status(200).json(data);
+    })
+    .catch((err)=>{
+      res.status(500).json(err);
+    })
+  }`;
+
+  // IMPORTS
+  if (jsonData.schemas.Users.auth) {
+    imports =
+      imports +
+      `const bcrypt = require("bcrypt");
+  const jwt = require("jsonwebtoken");`;
+
+    theCreateController = `exports.create${modelName} = (req, res, next) =>{
+  ${modelName}.find({ email: req.body.email }).then((data) => {
+    if (data.length >= 1) {
+      return res.status(409).json({
+        message: "User exists!",
+      });
+    } else {
+      bcrypt.hash(req.body.password, 8, async (err, hash) => {
+        if (err) {
+          return res.status(500).json({
+            error: err,
+          });
+        } else {
+          const ${schemaName} = new ${modelName}({
+            _id: mongoose.Types.ObjectId(),
+            ...req.body,
+            password: hash,
+          })
+          ${schemaName}.save()
+          .then((data)=>{
+            res.status(200).json(data);
+          })
+          .catch((err)=>{
+            res.status(500).json(err);
+          })
+        }
+      })
+    }
+  }).catch(err => {
+    console.log(err);
+    res.status(500).send({
+      error: err
+    })
+  }) 
+  }
+  
+  exports.login = (req, res, next) =>{
+    User.find({
+      $or: [
+        { email: req.body.email },
+      ],
+    })
+    .then(user=>{
+      if (user.length < 1) {
+        return res.status(401).json({
+          message: "Auth failed!",
+        });
+      }
+      res.send({})
+    }).catch((e) => {
+      console.log(e);
+      res.status(500).json({
+        error: "something went wrong!",
+      });
+    });
+  }`;
+  }
+
   //File content controllers
-  const controllerFileContent = `const mongoose = require('mongoose')
+  const controllerFileContent = `${imports}
+  const mongoose = require('mongoose')
   
   const ${modelName} = require('../models/${schemaName}.model.js')
   
@@ -24,19 +105,7 @@ exports.createController = (schema, projectPath, jsonData) => {
     })
   }
   
-  exports.create${modelName} = (req, res, next) =>{
-    const ${schemaName} = new ${modelName}({
-      _id: mongoose.Types.ObjectId(),
-      ...req.body
-    })
-    ${schemaName}.save()
-    .then((data)=>{
-      res.status(200).json(data);
-    })
-    .catch((err)=>{
-      res.status(500).json(err);
-    })
-  }
+  ${theCreateController}
   
   exports.get${modelName}ById = (req, res, next) =>{
     ${modelName}.findById(req.params.id)

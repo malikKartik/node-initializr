@@ -14,6 +14,7 @@ const jsonData = {
   schemas: {
     Users: {
       name: "Users",
+      auth: true,
       entities: [
         {
           name: "username",
@@ -96,4 +97,4 @@ Object.keys(jsonData.schemas).forEach((schema) => {
 createApp(projectPath, jsonData);
 createServer(projectPath);
 createConfig(projectPath);
-createPackage(projectPath);
+createPackage(projectPath, jsonData);
