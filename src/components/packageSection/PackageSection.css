@@ -1,0 +1,35 @@
+.package-section-container {
+  position: relative;
+  cursor: pointer;
+}
+
+.slider-previous {
+  position: absolute;
+  top: 60%;
+  left: 30px;
+  transform: translateY(-50%);
+  cursor: pointer;
+}
+
+.slider-next {
+  position: absolute;
+  top: 60%;
+  transform: translateY(-50%);
+  right: 30px;
+  cursor: pointer;
+}
+
+.package-section-content {
+  display: flex;
+  flex-direction: row;
+  overflow-x: scroll;
+  width: calc(100% - 100px);
+  margin-left: 50px;
+  margin-right: 50px;
+  scroll-behavior: smooth;
+  scrollbar-width: none;
+}
+
+.package-section-container ::-webkit-scrollbar {
+  width: 0;
+}
