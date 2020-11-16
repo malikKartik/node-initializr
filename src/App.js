@@ -6,10 +6,10 @@ import SectionBreak from "./components/sectionBreak/SectionBreak";
 import DatabaseSection from "./components/databaseSection/DatabaseSection";
 import PackageSection from "./components/packageSection/PackageSection";
 import CreateSchema from "./components/createSchema/CreateSchema";
+import Tables from "./components/tables/Tables";
 import nodejsActive from "./assets/images/nodejsActive.svg";
 import nodejsInactive from "./assets/images/nodejsInactive.svg";
 import javaInactive from "./assets/images/javaInactive.svg";
-
 const App = () => {
   const [languages, setLanguages] = useState([
     {
@@ -103,6 +103,17 @@ const App = () => {
     },
   ]);
 
+  const [currentSchema, setCurrentSchema] = useState({
+    schemaName: "",
+    entityName: "",
+    entityType: "String",
+    required: false,
+    unique: false,
+    entities: [],
+  });
+
+  const [allSchemas, setAllSchemas] = useState([]);
+
   const languageSelectionHandler = (value) => {
     let tempLanguages = [...languages];
     tempLanguages.forEach((language) => {
@@ -162,8 +173,14 @@ const App = () => {
       ></PackageSection>
       <SectionBreak></SectionBreak>
       {/* {JSON.stringify(config.packages)} */}
-      <CreateSchema></CreateSchema>
+      <CreateSchema
+        currentSchema={currentSchema}
+        setCurrentSchema={setCurrentSchema}
+        allSchemas={allSchemas}
+        setAllSchemas={setAllSchemas}
+      ></CreateSchema>
       <SectionBreak></SectionBreak>
+      <Tables allSchemas={allSchemas}></Tables>
       <SectionBreak></SectionBreak>
       <SectionBreak></SectionBreak>
       <SectionBreak></SectionBreak>

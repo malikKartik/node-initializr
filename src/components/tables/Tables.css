@@ -1,0 +1,20 @@
+.entity-table-all {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+}
+
+.entity-table-all-header {
+  background-color: #8ca5ff;
+  height: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+}
+
+.entity-table-all-row {
+  height: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}

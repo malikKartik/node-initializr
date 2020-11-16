@@ -7,6 +7,8 @@ const Input = (props) => {
         type="text"
         className="utils-input"
         placeholder={props.placeholder}
+        onChange={props.onChange}
+        value={props.value}
       />
     </>
   );
