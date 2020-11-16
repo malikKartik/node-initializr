@@ -7,11 +7,17 @@ import cross from "../../assets/images/close.png";
 import tick from "../../assets/images/tick.png";
 import pluralize from "pluralize";
 import EntityTable from "./entityTable/EntityTable";
+import SectionBreak from "../sectionBreak/SectionBreak";
 const CreateSchema = (props) => {
   const [isTableNameCorrect, setIsTableNameCorrect] = useState(false);
   const isTableNameCorrectFunc = (name) => {
     if (!name) return;
-    if (pluralize.isPlural(name) && /^\S*$/.test(name) && /^[A-Z]/.test(name))
+    if (
+      name.length > 0 &&
+      pluralize.isPlural(name) &&
+      /^\S*$/.test(name) &&
+      /^[A-Z]/.test(name)
+    )
       setIsTableNameCorrect(true);
     else setIsTableNameCorrect(false);
   };
@@ -92,7 +98,7 @@ const CreateSchema = (props) => {
           <input
             type="radio"
             name="entityType"
-            select={props.currentSchema.entityType === "String" ? true : false}
+            checked={props.currentSchema.entityType === "String" ? true : false}
             onChange={(e) => {
               props.setCurrentSchema({
                 ...props.currentSchema,
@@ -104,7 +110,7 @@ const CreateSchema = (props) => {
           <Label>Number</Label>
           <input
             type="radio"
-            select={props.currentSchema.entityType === "Number" ? true : false}
+            checked={props.currentSchema.entityType === "Number" ? true : false}
             onChange={(e) => {
               props.setCurrentSchema({
                 ...props.currentSchema,
@@ -117,7 +123,9 @@ const CreateSchema = (props) => {
           <Label>Boolean</Label>
           <input
             type="radio"
-            select={props.currentSchema.entityType === "Boolean" ? true : false}
+            checked={
+              props.currentSchema.entityType === "Boolean" ? true : false
+            }
             onChange={(e) => {
               props.setCurrentSchema({
                 ...props.currentSchema,
@@ -156,12 +164,10 @@ const CreateSchema = (props) => {
           />
         </div>
       </div>
-      <EntityTable
-        entities={props.currentSchema.entities}
-        currentSchema={props.currentSchema}
-        setCurrentSchema={props.setCurrentSchema}
-      ></EntityTable>
+
+      <SectionBreak></SectionBreak>
       <button
+        className="button"
         onClick={() => {
           if (
             !props.currentSchema.entityName ||
@@ -169,6 +175,13 @@ const CreateSchema = (props) => {
           )
             return;
           let temp = [...props.currentSchema.entities];
+          if (
+            temp.filter(
+              (item) => item.entityName === props.currentSchema.entityName
+            ).length > 0
+          ) {
+            return;
+          }
           temp.push({
             entityName: props.currentSchema.entityName,
             entityType: props.currentSchema.entityType,
@@ -187,9 +200,27 @@ const CreateSchema = (props) => {
       >
         Add entity
       </button>
+      <SectionBreak></SectionBreak>
+      <EntityTable
+        entities={props.currentSchema.entities}
+        currentSchema={props.currentSchema}
+        setCurrentSchema={props.setCurrentSchema}
+      ></EntityTable>
+
+      <SectionBreak></SectionBreak>
+      <SectionBreak></SectionBreak>
+
       <button
+        className="button"
         onClick={() => {
           let temp = [...props.allSchemas];
+          if (
+            temp.filter(
+              (item) => item.schemaName === props.currentSchema.schemaName
+            ).length > 0
+          ) {
+            return;
+          }
           temp.push({
             schemaName: props.currentSchema.schemaName,
             entities: props.currentSchema.entities,

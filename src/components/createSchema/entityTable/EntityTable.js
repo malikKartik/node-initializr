@@ -79,6 +79,7 @@ const EntityTable = (props) => {
           );
         })}
       </div>
+      {props.entities.length < 1 ? <center>No entities</center> : null}
     </>
   );
 };

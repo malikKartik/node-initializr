@@ -7,6 +7,7 @@ import DatabaseSection from "./components/databaseSection/DatabaseSection";
 import PackageSection from "./components/packageSection/PackageSection";
 import CreateSchema from "./components/createSchema/CreateSchema";
 import Tables from "./components/tables/Tables";
+import EnvironmentVariables from "./components/environmentVariable/EnvironmentVariable";
 import nodejsActive from "./assets/images/nodejsActive.svg";
 import nodejsInactive from "./assets/images/nodejsInactive.svg";
 import javaInactive from "./assets/images/javaInactive.svg";
@@ -180,8 +181,14 @@ const App = () => {
         setAllSchemas={setAllSchemas}
       ></CreateSchema>
       <SectionBreak></SectionBreak>
-      <Tables allSchemas={allSchemas}></Tables>
+      <Tables
+        allSchemas={allSchemas}
+        setAllSchemas={setAllSchemas}
+        currentSchema={currentSchema}
+        setCurrentSchema={setCurrentSchema}
+      ></Tables>
       <SectionBreak></SectionBreak>
+      <EnvironmentVariables></EnvironmentVariables>
       <SectionBreak></SectionBreak>
       <SectionBreak></SectionBreak>
     </div>

@@ -8,3 +8,13 @@
   border: 1px solid black;
   width: fit-content;
 }
+
+.button {
+  background-color: #f85f73;
+  color: white;
+  height: 35px;
+  width: 100px;
+  border: none;
+  border-radius: 5px;
+  margin: 5px;
+}
