@@ -1,0 +1,5 @@
+.create-schema-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 4fr;
+  grid-row-gap: 20px;
+}

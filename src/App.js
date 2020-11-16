@@ -5,6 +5,7 @@ import LanguageSection from "./components/languageSection/LanguageSection";
 import SectionBreak from "./components/sectionBreak/SectionBreak";
 import DatabaseSection from "./components/databaseSection/DatabaseSection";
 import PackageSection from "./components/packageSection/PackageSection";
+import CreateSchema from "./components/createSchema/CreateSchema";
 import nodejsActive from "./assets/images/nodejsActive.svg";
 import nodejsInactive from "./assets/images/nodejsInactive.svg";
 import javaInactive from "./assets/images/javaInactive.svg";
@@ -160,7 +161,12 @@ const App = () => {
         packageSelectionHandler={packageSelectionHandler}
       ></PackageSection>
       <SectionBreak></SectionBreak>
-      {config.packages}
+      {/* {JSON.stringify(config.packages)} */}
+      <CreateSchema></CreateSchema>
+      <SectionBreak></SectionBreak>
+      <SectionBreak></SectionBreak>
+      <SectionBreak></SectionBreak>
+      <SectionBreak></SectionBreak>
     </div>
   );
 };
