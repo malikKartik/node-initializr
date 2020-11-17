@@ -41,10 +41,10 @@ const App = () => {
         models: {},
         routes: {},
       },
+      "server.js": null,
+      "app.js": null,
+      "package.json": null,
     },
-    "server.js": null,
-    "app.js": null,
-    "package.json": null,
     schemas: {},
     language: "node",
     database: "mongodb",
@@ -190,6 +190,25 @@ const App = () => {
       <SectionBreak></SectionBreak>
       <EnvironmentVariables></EnvironmentVariables>
       <SectionBreak></SectionBreak>
+      <button
+        className="button"
+        onClick={() => {
+          let finalObject = { ...config };
+          let schemas = {};
+          allSchemas.forEach((schema) => {
+            schemas[schema.schemaName] = {};
+            schemas[schema.schemaName].name = schema.schemaName;
+            if (schema.schemaName === "Users") {
+              schemas[schema.schemaName].auth = schema.auth ? true : false;
+            }
+            schemas[schema.schemaName].entities = schema.entities;
+          });
+          finalObject = { ...finalObject, schemas: { ...schemas } };
+          console.log(finalObject);
+        }}
+      >
+        Generate
+      </button>
       <SectionBreak></SectionBreak>
     </div>
   );
