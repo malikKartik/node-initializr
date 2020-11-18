@@ -9,8 +9,10 @@
     "author": "",
     "license": "ISC",
     "dependencies": {
+        "archiver": "^5.0.2",
         "express": "^4.17.1",
         "js-beautify": "^1.13.0",
-        "pluralize": "^8.0.0"
+        "pluralize": "^8.0.0",
+        "uuid": "^8.3.1"
     }
 }

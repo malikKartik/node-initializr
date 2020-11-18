@@ -1,85 +1,94 @@
-// NOTE: Esprima can be used for JS validation
+const express = require("express");
+const path = require("path");
+const archiver = require("archiver");
 
-// ADDING A PACKAGE TO "package.json"
-// const fs = require('fs');
+const app = express();
+app.use(express.urlencoded({ extended: false }));
+app.use(express.json());
+app.use(express.static(path.join(__dirname, "newProject")));
+app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "http://localhost:3000");
+  res.header(
+    "Access-Control-Allow-Headers",
+    "Set-Cookie,Origin, X-Requested-With, Content-Type, Accept"
+  );
+  res.header("Access-Control-Allow-Credentials", true);
+  if (req.method === "OPTIONS") {
+    res.header("Access-Control-Allow-Methods", "PUT,POST,PATCH,DELETE,GET");
+    return res.status(200).json({});
+  }
+  next();
+});
 
-// let jsonData = JSON.parse(fs.readFileSync('./package.json'))
-// jsonData.dependencies = {
-//     "express": "^4.17.1"
-//   }
+app.post("/ninit", (req, res) => {
+  console.log("Here");
+  const jsonData = req.body;
+  const fs = require("fs");
+  const uuid = require("uuid");
+  const PID = uuid.v4();
+  const mkdirs = (obj, path) => {
+    if (obj) {
+      Object.keys(obj).forEach((key) => {
+        let tempPath = path + `/${key}`;
+        if (key.split(".").length == 1) {
+          if (!fs.existsSync(tempPath)) {
+            fs.mkdirSync(tempPath);
+          }
+          mkdirs(obj[key], tempPath);
+        } else {
+          const filePath = key.split(".");
+          if (filePath[filePath.length - 1] == "js") {
+            fs.writeFileSync(tempPath);
+          }
+          if (filePath[filePath.length - 1] == "json") {
+            fs.writeFileSync(tempPath);
+          }
+        }
+      });
+    }
+    return;
+  };
 
-// jsonData = JSON.stringify(jsonData,null,4)
-// fs.writeFileSync('package.json', jsonData);
+  const projectPath = `./newProject/${PID}`;
+  if (!fs.existsSync(projectPath)) {
+    fs.mkdirSync(projectPath);
+  }
+  mkdirs(jsonData.structure, projectPath);
 
-// CREATING DIRECTORIES
-// var fs = require('fs');
-// let jsonData = JSON.parse(fs.readFileSync('./ninit.config.json'))
+  const createModel = require("./utils/createModel").createModel;
+  const createController = require("./utils/createController").createController;
+  const createRoute = require("./utils/createRoute").createRoute;
+  const createApp = require("./utils/createApp").createApp;
+  const createServer = require("./utils/createServer").createServer;
+  const createConfig = require("./utils/createConfig").createConfig;
+  const createPackage = require("./utils/createPackage").createPackage;
+  const createMiddleWare = require("./utils/createMiddleware");
 
-// const mkdirs = (obj,path) =>{
-//     if(obj){
-//         Object.keys(obj).forEach(key=>{
-//             let tempPath = path+`/${key}`
-//             if(key.split(".").length==1){
-//                 if (!fs.existsSync(tempPath)){
-//                     fs.mkdirSync(tempPath);
-//                 }
-//                 mkdirs(obj[key],tempPath)
-//             }else{
-//                 const filePath = key.split(".")
-//                 if(filePath[filePath.length-1]=="js"){
-//                     fs.writeFileSync(tempPath);
-//                 }
-//             }
-//         })
-//     }
-//     return
-// }
-// mkdirs(jsonData,".")
+  // CREATING ALL FILES(as of now just model file)
+  Object.keys(jsonData.schemas).forEach((schema) => {
+    createModel(schema, projectPath, jsonData);
+    createController(schema, projectPath, jsonData);
+    createRoute(schema, projectPath, jsonData);
+  });
 
-// CREATING model
-const jsonData = {
-  structure: {
-    src: {
-      controllers: {},
-      config: {},
-      middlewares: {},
-      models: {},
-      routes: {},
-    },
-  },
-  "server.js": null,
-  schemas: {
-    Users: {
-      name: "Users",
-      entities: [
-        {
-          name: "username",
-          required: true,
-          unique: false,
-        },
-        {
-          name: "email",
-          required: true,
-          unique: true,
-        },
-      ],
-    },
-    Blogs: {
-      name: "Blogs",
-      entities: [
-        {
-          name: "title",
-          required: true,
-          unique: true,
-        },
-        {
-          name: "content",
-          required: true,
-          unique: false,
-        },
-      ],
-    },
-  },
-  languge: "node",
-  framework: "express",
-};
+  createApp(projectPath, jsonData);
+  createServer(projectPath);
+  createConfig(projectPath);
+  createPackage(projectPath, jsonData);
+  if (jsonData.schemas.Users && jsonData.schemas.Users.auth)
+    createMiddleWare.createAuthMiddleware(projectPath, jsonData);
+  const dirPath = __dirname + `/${PID}`;
+
+  const output = fs.createWriteStream(__dirname + `/newProject/${PID}.zip`);
+  const archive = archiver("zip", {
+    zlib: { level: 9 }, // Sets the compression level.
+  });
+  output.on("close", function () {
+    res.send({ path: `${PID}` });
+  });
+  archive.pipe(output);
+  archive.directory(__dirname + `/newProject/${PID}`, false);
+  archive.finalize();
+});
+
+module.exports = app;
