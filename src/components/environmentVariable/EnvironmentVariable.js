@@ -11,15 +11,27 @@ const EnvironmentVariable = (props) => {
       <div className="environment-variable-form-grid">
         <Label>PORT:</Label>
         <div>
-          <Input placeholder="Enter PORT" value={""} onChange={(e) => {}} />
+          <Input
+            placeholder="Enter PORT"
+            value={props.config.env.PORT}
+            onChange={(e) => {
+              let temp = { ...props.config };
+              temp.env.PORT = e.target.value;
+              props.setConfig({ ...temp });
+            }}
+          />
           <p className="environment-variable-input-condition">*Default 3001</p>
         </div>
         <Label>MONGODB_SRV:</Label>
         <div>
           <Input
             placeholder="Enter MONGODB_SRV"
-            value={""}
-            onChange={(e) => {}}
+            value={props.config.env.MONGODB_SRV}
+            onChange={(e) => {
+              let temp = { ...props.config };
+              temp.env.MONGODB_SRV = e.target.value;
+              props.setConfig({ ...temp });
+            }}
           />
           <p className="environment-variable-input-condition">
             *No default value
@@ -29,8 +41,12 @@ const EnvironmentVariable = (props) => {
         <div>
           <Input
             placeholder="Enter JWT_SECRET"
-            value={""}
-            onChange={(e) => {}}
+            value={props.config.env.JWT_SECRET}
+            onChange={(e) => {
+              let temp = { ...props.config };
+              temp.env.JWT_SECRET = e.target.value;
+              props.setConfig({ ...temp });
+            }}
           />
           <p className="environment-variable-input-condition">
             *Dafault value is "key"

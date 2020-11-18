@@ -11,6 +11,8 @@ import EnvironmentVariables from "./components/environmentVariable/EnvironmentVa
 import nodejsActive from "./assets/images/nodejsActive.svg";
 import nodejsInactive from "./assets/images/nodejsInactive.svg";
 import javaInactive from "./assets/images/javaInactive.svg";
+import axios from "axios";
+
 const App = () => {
   const [languages, setLanguages] = useState([
     {
@@ -41,14 +43,19 @@ const App = () => {
         models: {},
         routes: {},
       },
+      "server.js": null,
+      "app.js": null,
+      "package.json": null,
     },
-    "server.js": null,
-    "app.js": null,
-    "package.json": null,
     schemas: {},
     language: "node",
     database: "mongodb",
     packages: ["express", "mongoose"],
+    env: {
+      PORT: "",
+      MONGODB_SRV: "",
+      JWT_SECRET: "",
+    },
   });
 
   const [packages, setPackages] = useState([
@@ -188,8 +195,37 @@ const App = () => {
         setCurrentSchema={setCurrentSchema}
       ></Tables>
       <SectionBreak></SectionBreak>
-      <EnvironmentVariables></EnvironmentVariables>
+      <EnvironmentVariables
+        config={config}
+        setConfig={setConfig}
+      ></EnvironmentVariables>
       <SectionBreak></SectionBreak>
+      <button
+        className="button"
+        onClick={() => {
+          let finalObject = { ...config };
+          let schemas = {};
+          allSchemas.forEach((schema) => {
+            schemas[schema.schemaName] = {};
+            schemas[schema.schemaName].name = schema.schemaName;
+            if (schema.schemaName === "Users") {
+              schemas[schema.schemaName].auth = schema.auth ? true : false;
+            }
+            schemas[schema.schemaName].entities = schema.entities;
+          });
+          finalObject = { ...finalObject, schemas: { ...schemas } };
+          axios
+            .post("http://localhost:8080/ninit", finalObject)
+            .then((data) => {
+              window.open(`http://localhost:8080/${data.data.path}.zip`);
+            })
+            .catch((e) => {
+              console.log(e);
+            });
+        }}
+      >
+        Generate
+      </button>
       <SectionBreak></SectionBreak>
     </div>
   );

@@ -26,6 +26,12 @@ const CreateSchema = (props) => {
     isTableNameCorrectFunc(props.currentSchema.schemaName);
   }, [props.currentSchema.schemaName]);
 
+  const removeAuth = () => {
+    const temp = { ...props.currentSchema };
+    delete temp.auth;
+    props.setCurrentSchema(temp);
+  };
+
   return (
     <>
       <SubHeading>Create Schema</SubHeading>
@@ -62,6 +68,25 @@ const CreateSchema = (props) => {
             should be plural.
           </p>
         </div>
+        {props.currentSchema.schemaName === "Users" ? (
+          <>
+            <Label>Enable Authentication:</Label>
+            <div>
+              <input
+                type="checkbox"
+                checked={props.currentSchema.auth ? true : false}
+                onChange={(e) => {
+                  props.setCurrentSchema({
+                    ...props.currentSchema,
+                    auth: e.target.checked,
+                  });
+                }}
+              />
+            </div>
+          </>
+        ) : (
+          <>{removeAuth}</>
+        )}
         <Label>Entity name:</Label>
         <div>
           <Input
@@ -221,14 +246,23 @@ const CreateSchema = (props) => {
           ) {
             return;
           }
-          temp.push({
-            schemaName: props.currentSchema.schemaName,
-            entities: props.currentSchema.entities,
-          });
+          if (props.currentSchema.schemaName === "Users") {
+            temp.push({
+              schemaName: props.currentSchema.schemaName,
+              entities: props.currentSchema.entities,
+              auth: props.currentSchema.auth,
+            });
+          } else {
+            temp.push({
+              schemaName: props.currentSchema.schemaName,
+              entities: props.currentSchema.entities,
+            });
+          }
           props.setAllSchemas(temp);
           props.setCurrentSchema({
             schemaName: "",
             entityName: "",
+            auth: false,
             entityType: "String",
             required: false,
             unique: false,
