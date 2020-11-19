@@ -42,6 +42,8 @@ const Tables = (props) => {
                     required: false,
                     unique: false,
                     entities: schema.entities,
+                    routes: schema.routes,
+                    auth: schema.auth,
                   });
                 }}
               />

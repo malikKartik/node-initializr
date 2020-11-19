@@ -12,22 +12,90 @@ exports.createRoute = (schema, projectPath, jsonData) => {
 
   // Routes
   let routes = "";
+  let imports = `const express = require("express");
+  const router = express.Router();
+  const ${controllerName} = require("../controllers/${schemaName}.controllers.js");`;
+  let routers = "";
   if (jsonData.schemas.Users && jsonData.schemas.Users.auth) {
-    routes = routes + `router.post('/login', ${controllerName}.login);`;
+    if (schemaName === "user")
+      routes = routes + `router.post('/login', ${controllerName}.login);`;
+    imports = imports + `const auth = require("../middlewares/auth.js")`;
   }
 
-  //File content routes
-  const routeFileContent = `const express = require("express");
-  const router = express.Router();
-  const ${controllerName} = require("../controllers/${schemaName}.controllers.js");
+  //Read
+  if (
+    jsonData.schemas[schema].routes.read.protected &&
+    jsonData.schemas.Users &&
+    jsonData.schemas.Users.auth
+  )
+    routers =
+      routers +
+      `router.get("/", auth, ${controllerName}.getAll${
+        schema.charAt(0).toUpperCase() + schema.slice(1)
+      });`;
+  else
+    routers =
+      routers +
+      `router.get("/", ${controllerName}.getAll${
+        schema.charAt(0).toUpperCase() + schema.slice(1)
+      });`;
 
-  router.get("/", ${controllerName}.getAll${
-    schema.charAt(0).toUpperCase() + schema.slice(1)
-  });
-  router.get('/:id', ${controllerName}.get${modelName}ById);
-  router.post("/", ${controllerName}.create${modelName});
-  router.delete("/:id",  ${controllerName}.delete${modelName}ById);
-  router.patch("/:id", ${controllerName}.update${modelName});
+  //ReadById
+  if (
+    jsonData.schemas[schema].routes.readById.protected &&
+    jsonData.schemas.Users &&
+    jsonData.schemas.Users.auth
+  )
+    routers =
+      routers +
+      `router.get('/:id', auth, ${controllerName}.get${modelName}ById);`;
+  else
+    routers =
+      routers + `router.get('/:id', ${controllerName}.get${modelName}ById);`;
+
+  //Create
+  if (
+    jsonData.schemas[schema].routes.create.protected &&
+    jsonData.schemas.Users &&
+    jsonData.schemas.Users.auth
+  )
+    routers =
+      routers + `router.post("/", auth, ${controllerName}.create${modelName});`;
+  else
+    routers =
+      routers + `router.post("/", ${controllerName}.create${modelName});`;
+
+  //Delete
+  if (
+    jsonData.schemas[schema].routes.delete.protected &&
+    jsonData.schemas.Users &&
+    jsonData.schemas.Users.auth
+  )
+    routers =
+      routers +
+      `router.delete("/:id",  auth, ${controllerName}.delete${modelName}ById);`;
+  else
+    routers =
+      routers +
+      `router.delete("/:id",  ${controllerName}.delete${modelName}ById);`;
+
+  //Update
+  if (
+    jsonData.schemas[schema].routes.update.protected &&
+    jsonData.schemas.Users &&
+    jsonData.schemas.Users.auth
+  )
+    routers =
+      routers +
+      `router.patch("/:id", auth, ${controllerName}.update${modelName});`;
+  else
+    routers =
+      routers + `router.patch("/:id", ${controllerName}.update${modelName});`;
+
+  //File content routes
+  const routeFileContent = `${imports}
+  
+  ${routers}
   ${routes}
 
 module.exports = router;`;
