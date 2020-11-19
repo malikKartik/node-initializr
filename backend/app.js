@@ -1,6 +1,7 @@
 const express = require("express");
 const path = require("path");
 const archiver = require("archiver");
+const crypto = require("crypto");
 
 const app = express();
 app.use(express.urlencoded({ extended: false }));
@@ -63,6 +64,7 @@ app.post("/ninit", (req, res) => {
   const createConfig = require("./utils/createConfig").createConfig;
   const createPackage = require("./utils/createPackage").createPackage;
   const createMiddleWare = require("./utils/createMiddleware");
+  const createDotenv = require("./utils/createDotenv").createDotenv;
 
   // CREATING ALL FILES(as of now just model file)
   Object.keys(jsonData.schemas).forEach((schema) => {
@@ -75,6 +77,7 @@ app.post("/ninit", (req, res) => {
   createServer(projectPath);
   createConfig(projectPath);
   createPackage(projectPath, jsonData);
+  createDotenv(projectPath, jsonData);
   if (jsonData.schemas.Users && jsonData.schemas.Users.auth)
     createMiddleWare.createAuthMiddleware(projectPath, jsonData);
   const dirPath = __dirname + `/${PID}`;
@@ -84,7 +87,12 @@ app.post("/ninit", (req, res) => {
     zlib: { level: 9 }, // Sets the compression level.
   });
   output.on("close", function () {
-    res.send({ path: `${PID}` });
+    const algorithm = "aes256";
+    const key = "password";
+    const text = JSON.stringify(jsonData, null, 4);
+    const cipher = crypto.createCipher(algorithm, key);
+    const encrypted = cipher.update(text, "utf8", "hex") + cipher.final("hex");
+    res.send({ path: `${PID}`, pkey: encrypted });
   });
   archive.pipe(output);
   archive.directory(__dirname + `/newProject/${PID}`, false);

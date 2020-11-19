@@ -12,8 +12,13 @@ import nodejsActive from "./assets/images/nodejsActive.svg";
 import nodejsInactive from "./assets/images/nodejsInactive.svg";
 import javaInactive from "./assets/images/javaInactive.svg";
 import axios from "axios";
-
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import Input from "./components/utils/Input";
+import Label from "./components/utils/Label";
 const App = () => {
+  const [download, setDownload] = useState(null);
+  const [regenKey, setRegenKey] = useState("");
   const [languages, setLanguages] = useState([
     {
       label: "Node.js",
@@ -50,7 +55,6 @@ const App = () => {
     schemas: {},
     language: "node",
     database: "mongodb",
-    packages: ["express", "mongoose"],
     env: {
       PORT: "",
       MONGODB_SRV: "",
@@ -142,22 +146,6 @@ const App = () => {
     await tempPackages.forEach((pack) => {
       if (pack.value === value) {
         pack.selected = !pack.selected;
-        if (pack.selected)
-          setConfig({
-            ...config,
-            packages: config.packages.concat(value),
-          });
-        else {
-          let toBeSpliced = [...config.packages];
-          let index = config.packages.indexOf(value);
-          if (index !== -1) {
-            toBeSpliced.splice(index, 1);
-            setConfig({
-              ...config,
-              packages: toBeSpliced,
-            });
-          }
-        }
       }
     });
     await setPackages(tempPackages);
@@ -166,6 +154,7 @@ const App = () => {
 
   return (
     <div style={{ marginLeft: "5%", marginRight: "5%" }}>
+      <ToastContainer />
       <CentralHeading></CentralHeading>
       <SectionBreak></SectionBreak>
       <LanguageSection
@@ -186,6 +175,8 @@ const App = () => {
         setCurrentSchema={setCurrentSchema}
         allSchemas={allSchemas}
         setAllSchemas={setAllSchemas}
+        packages={packages}
+        setPackages={setPackages}
       ></CreateSchema>
       <SectionBreak></SectionBreak>
       <Tables
@@ -213,11 +204,32 @@ const App = () => {
             }
             schemas[schema.schemaName].entities = schema.entities;
           });
-          finalObject = { ...finalObject, schemas: { ...schemas } };
+          let finalPackages = [];
+          packages
+            .filter((p) => p.selected)
+            .forEach((p) => {
+              finalPackages.push(p.value);
+            });
+          finalObject = {
+            ...finalObject,
+            schemas: { ...schemas },
+            packages: finalPackages,
+          };
+          console.log(finalObject);
           axios
             .post("http://localhost:8080/ninit", finalObject)
             .then((data) => {
-              window.open(`http://localhost:8080/${data.data.path}.zip`);
+              toast.success("Project created!", {
+                position: "top-left",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+              });
+              setRegenKey(data.data.pkey);
+              setDownload(`http://localhost:8080/${data.data.path}.zip`);
             })
             .catch((e) => {
               console.log(e);
@@ -226,6 +238,40 @@ const App = () => {
       >
         Generate
       </button>
+      <br /> <p style={{ marginLeft: "40px", marginBottom: "0px" }}>OR</p>{" "}
+      <br />
+      <Input placeholder="Enter the regenration key!"></Input>
+      <button className="button">Regenrate</button>
+      {download ? (
+        <>
+          <br />
+          <button onClick={() => window.open(download)} className="button">
+            Download
+          </button>
+          <br />
+          <button
+            className="button"
+            onClick={() => {
+              navigator.clipboard.writeText(regenKey).then(() => {
+                toast.success("Copied to clipboard!", {
+                  position: "top-left",
+                  autoClose: 5000,
+                  hideProgressBar: false,
+                  closeOnClick: true,
+                  pauseOnHover: true,
+                  draggable: true,
+                  progress: undefined,
+                });
+              });
+            }}
+          >
+            Click to copy regenration key!
+          </button>
+          <Label>
+            *You can use this key to regenrate the same project later!
+          </Label>
+        </>
+      ) : null}
       <SectionBreak></SectionBreak>
     </div>
   );

@@ -5,7 +5,7 @@ import "./EntityTable.css";
 
 const EntityTable = (props) => {
   return (
-    <>
+    <div style={{ border: "1px solid rgba(0,0,0,0.3)" }}>
       <div className="entity-table">
         <div className="entity-table-header">
           <p>Entity Name</p>
@@ -80,7 +80,7 @@ const EntityTable = (props) => {
         })}
       </div>
       {props.entities.length < 1 ? <center>No entities</center> : null}
-    </>
+    </div>
   );
 };
 
