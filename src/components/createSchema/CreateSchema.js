@@ -273,6 +273,80 @@ const CreateSchema = (props) => {
       ></EntityTable>
 
       <SectionBreak></SectionBreak>
+      {props.currentSchema.schemaName ? (
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns:
+              "minmax(100px, max-content) minmax(100px, max-content) minmax(100px, max-content) minmax(100px, max-content)",
+          }}
+        >
+          <Label>GET /api/{props.currentSchema.schemaName.toLowerCase()}</Label>{" "}
+          <Label>
+            <center>-</center>
+          </Label>{" "}
+          <Label>
+            To get all {props.currentSchema.schemaName.toLowerCase()}
+          </Label>
+          <div style={{ paddingTop: "5px" }}>
+            <input type="checkbox" name="" id="" />
+          </div>
+          <Label>
+            GET /api/{props.currentSchema.schemaName.toLowerCase()}/:id
+          </Label>{" "}
+          <Label>
+            <center>-</center>
+          </Label>{" "}
+          <Label>
+            To get{" "}
+            {pluralize.singular(props.currentSchema.schemaName.toLowerCase())}{" "}
+            by Id
+          </Label>
+          <div style={{ paddingTop: "5px" }}>
+            <input type="checkbox" name="" id="" />
+          </div>
+          <Label>
+            POST /api/{props.currentSchema.schemaName.toLowerCase()}
+          </Label>{" "}
+          <Label>
+            <center>-</center>
+          </Label>{" "}
+          <Label>
+            To create a{" "}
+            {pluralize.singular(props.currentSchema.schemaName.toLowerCase())}
+          </Label>
+          <div style={{ paddingTop: "5px" }}>
+            <input type="checkbox" name="" id="" />
+          </div>
+          <Label>
+            DELETE /api/{props.currentSchema.schemaName.toLowerCase()}/:id
+          </Label>{" "}
+          <Label>
+            <center>-</center>
+          </Label>{" "}
+          <Label>
+            To remove a{" "}
+            {pluralize.singular(props.currentSchema.schemaName.toLowerCase())}
+          </Label>
+          <div style={{ paddingTop: "5px" }}>
+            <input type="checkbox" name="" id="" />
+          </div>
+          <Label>
+            PATCH /api/{props.currentSchema.schemaName.toLowerCase()}
+          </Label>{" "}
+          <Label>
+            <center>-</center>
+          </Label>{" "}
+          <Label>
+            To update a{" "}
+            {pluralize.singular(props.currentSchema.schemaName.toLowerCase())}
+          </Label>
+          <div style={{ paddingTop: "5px" }}>
+            <input type="checkbox" name="" id="" />
+          </div>
+        </div>
+      ) : null}
+      <br />
       <SectionBreak></SectionBreak>
       <button
         className="button"
