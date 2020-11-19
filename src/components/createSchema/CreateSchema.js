@@ -8,6 +8,7 @@ import tick from "../../assets/images/tick.png";
 import pluralize from "pluralize";
 import EntityTable from "./entityTable/EntityTable";
 import SectionBreak from "../sectionBreak/SectionBreak";
+import { toast } from "react-toastify";
 const CreateSchema = (props) => {
   const [isTableNameCorrect, setIsTableNameCorrect] = useState(false);
   const isTableNameCorrectFunc = (name) => {
@@ -24,6 +25,11 @@ const CreateSchema = (props) => {
 
   useEffect(() => {
     isTableNameCorrectFunc(props.currentSchema.schemaName);
+    checkForAuthHandler();
+    props.setCurrentSchema({
+      ...props.currentSchema,
+      auth: props.auth,
+    });
   }, [props.currentSchema.schemaName]);
 
   const removeAuth = () => {
@@ -32,6 +38,26 @@ const CreateSchema = (props) => {
     props.setCurrentSchema(temp);
   };
 
+  const routeProtectionHandler = (e) => {
+    let tempSchema = { ...props.currentSchema };
+    tempSchema.routes[e.target.name].protected = e.target.checked;
+    props.setCurrentSchema(tempSchema);
+  };
+
+  const checkForAuthHandler = () => {
+    let found = false;
+    if (props.currentSchema.schemaName === "Users") {
+      props.setAuth(props.currentSchema.auth);
+      return;
+    }
+    props.allSchemas.forEach((schema) => {
+      if (schema.schemaName === "Users") {
+        found = true;
+        props.setAuth(schema.auth);
+      }
+    });
+    if (!found) props.setAuth(false);
+  };
   return (
     <>
       <SubHeading>Create Schema</SubHeading>
@@ -77,6 +103,7 @@ const CreateSchema = (props) => {
                 checked={props.currentSchema.auth ? true : false}
                 onChange={(e) => {
                   if (e.target.checked) {
+                    toast.info("Email and password have been added!");
                     let temp = [...props.packages];
                     for (let i = 0; i < temp.length; i++) {
                       if (
@@ -92,6 +119,40 @@ const CreateSchema = (props) => {
                     }
                     console.log(temp);
                     props.setPackages(temp);
+                    props.setAuth(true);
+                    temp = [...props.currentSchema.entities];
+                    if (
+                      temp.filter(
+                        (item) =>
+                          item.entityName === "email" ||
+                          item.entityName === "password"
+                      ).length === 0
+                    ) {
+                      props.setCurrentSchema({
+                        ...props.currentSchema,
+                        entities: [
+                          ...props.currentSchema.entities,
+                          {
+                            entityName: "email",
+                            entityType: "String",
+                            required: true,
+                            unique: true,
+                          },
+                          {
+                            entityName: "password",
+                            entityType: "String",
+                            required: true,
+                            unique: true,
+                          },
+                        ],
+                        auth: e.target.checked,
+                      });
+                    } else {
+                      props.setCurrentSchema({
+                        ...props.currentSchema,
+                        auth: e.target.checked,
+                      });
+                    }
                   } else {
                     let temp = [...props.packages];
                     for (let i = 0; i < temp.length; i++) {
@@ -108,11 +169,12 @@ const CreateSchema = (props) => {
                     }
                     console.log(temp);
                     props.setPackages(temp);
+                    props.setAuth(false);
+                    props.setCurrentSchema({
+                      ...props.currentSchema,
+                      auth: e.target.checked,
+                    });
                   }
-                  props.setCurrentSchema({
-                    ...props.currentSchema,
-                    auth: e.target.checked,
-                  });
                 }}
               />
               <p
@@ -245,6 +307,7 @@ const CreateSchema = (props) => {
               (item) => item.entityName === props.currentSchema.entityName
             ).length > 0
           ) {
+            toast.error("An entity with this name already exists!");
             return;
           }
           temp.push({
@@ -273,78 +336,119 @@ const CreateSchema = (props) => {
       ></EntityTable>
 
       <SectionBreak></SectionBreak>
-      {props.currentSchema.schemaName ? (
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns:
-              "minmax(100px, max-content) minmax(100px, max-content) minmax(100px, max-content) minmax(100px, max-content)",
-          }}
-        >
-          <Label>GET /api/{props.currentSchema.schemaName.toLowerCase()}</Label>{" "}
-          <Label>
-            <center>-</center>
-          </Label>{" "}
-          <Label>
-            To get all {props.currentSchema.schemaName.toLowerCase()}
-          </Label>
-          <div style={{ paddingTop: "5px" }}>
-            <input type="checkbox" name="" id="" />
+      {props.currentSchema.schemaName && props.auth ? (
+        <>
+          <SubHeading>Select the routes you want to protect.</SubHeading>
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns:
+                "minmax(100px, max-content) minmax(100px, max-content) minmax(100px, max-content) minmax(100px, max-content)",
+            }}
+          >
+            <Label>
+              GET /api/{props.currentSchema.schemaName.toLowerCase()}
+            </Label>{" "}
+            <Label>
+              <center>-</center>
+            </Label>{" "}
+            <Label>
+              To get all {props.currentSchema.schemaName.toLowerCase()}
+            </Label>
+            <div style={{ paddingTop: "5px" }}>
+              <input
+                type="checkbox"
+                name="read"
+                id=""
+                onChange={routeProtectionHandler}
+                checked={props.currentSchema.routes.read.protected}
+              />
+            </div>
+            <Label>
+              GET /api/{props.currentSchema.schemaName.toLowerCase()}/:id
+            </Label>{" "}
+            <Label>
+              <center>-</center>
+            </Label>{" "}
+            <Label>
+              To get{" "}
+              {pluralize.singular(props.currentSchema.schemaName.toLowerCase())}{" "}
+              by Id
+            </Label>
+            <div style={{ paddingTop: "5px" }}>
+              <input
+                type="checkbox"
+                name="readById"
+                id=""
+                onChange={routeProtectionHandler}
+                checked={props.currentSchema.routes.readById.protected}
+              />
+            </div>
+            {props.currentSchema.schemaName !== "Users" ? (
+              <>
+                <Label>
+                  POST /api/{props.currentSchema.schemaName.toLowerCase()}
+                </Label>{" "}
+                <Label>
+                  <center>-</center>
+                </Label>{" "}
+                <Label>
+                  To create a{" "}
+                  {pluralize.singular(
+                    props.currentSchema.schemaName.toLowerCase()
+                  )}
+                </Label>
+                <div style={{ paddingTop: "5px" }}>
+                  <input
+                    type="checkbox"
+                    name="create"
+                    id=""
+                    onChange={routeProtectionHandler}
+                    checked={props.currentSchema.routes.create.protected}
+                  />
+                </div>
+              </>
+            ) : null}
+            <Label>
+              DELETE /api/{props.currentSchema.schemaName.toLowerCase()}/:id
+            </Label>{" "}
+            <Label>
+              <center>-</center>
+            </Label>{" "}
+            <Label>
+              To remove a{" "}
+              {pluralize.singular(props.currentSchema.schemaName.toLowerCase())}
+            </Label>
+            <div style={{ paddingTop: "5px" }}>
+              <input
+                type="checkbox"
+                name="delete"
+                id=""
+                onChange={routeProtectionHandler}
+                checked={props.currentSchema.routes.delete.protected}
+              />
+            </div>
+            <Label>
+              PATCH /api/{props.currentSchema.schemaName.toLowerCase()}
+            </Label>{" "}
+            <Label>
+              <center>-</center>
+            </Label>{" "}
+            <Label>
+              To update a{" "}
+              {pluralize.singular(props.currentSchema.schemaName.toLowerCase())}
+            </Label>
+            <div style={{ paddingTop: "5px" }}>
+              <input
+                type="checkbox"
+                name="update"
+                id=""
+                onChange={routeProtectionHandler}
+                checked={props.currentSchema.routes.update.protected}
+              />
+            </div>
           </div>
-          <Label>
-            GET /api/{props.currentSchema.schemaName.toLowerCase()}/:id
-          </Label>{" "}
-          <Label>
-            <center>-</center>
-          </Label>{" "}
-          <Label>
-            To get{" "}
-            {pluralize.singular(props.currentSchema.schemaName.toLowerCase())}{" "}
-            by Id
-          </Label>
-          <div style={{ paddingTop: "5px" }}>
-            <input type="checkbox" name="" id="" />
-          </div>
-          <Label>
-            POST /api/{props.currentSchema.schemaName.toLowerCase()}
-          </Label>{" "}
-          <Label>
-            <center>-</center>
-          </Label>{" "}
-          <Label>
-            To create a{" "}
-            {pluralize.singular(props.currentSchema.schemaName.toLowerCase())}
-          </Label>
-          <div style={{ paddingTop: "5px" }}>
-            <input type="checkbox" name="" id="" />
-          </div>
-          <Label>
-            DELETE /api/{props.currentSchema.schemaName.toLowerCase()}/:id
-          </Label>{" "}
-          <Label>
-            <center>-</center>
-          </Label>{" "}
-          <Label>
-            To remove a{" "}
-            {pluralize.singular(props.currentSchema.schemaName.toLowerCase())}
-          </Label>
-          <div style={{ paddingTop: "5px" }}>
-            <input type="checkbox" name="" id="" />
-          </div>
-          <Label>
-            PATCH /api/{props.currentSchema.schemaName.toLowerCase()}
-          </Label>{" "}
-          <Label>
-            <center>-</center>
-          </Label>{" "}
-          <Label>
-            To update a{" "}
-            {pluralize.singular(props.currentSchema.schemaName.toLowerCase())}
-          </Label>
-          <div style={{ paddingTop: "5px" }}>
-            <input type="checkbox" name="" id="" />
-          </div>
-        </div>
+        </>
       ) : null}
       <br />
       <SectionBreak></SectionBreak>
@@ -364,11 +468,13 @@ const CreateSchema = (props) => {
               schemaName: props.currentSchema.schemaName,
               entities: props.currentSchema.entities,
               auth: props.currentSchema.auth,
+              routes: props.currentSchema.routes,
             });
           } else {
             temp.push({
               schemaName: props.currentSchema.schemaName,
               entities: props.currentSchema.entities,
+              routes: props.currentSchema.routes,
             });
           }
           props.setAllSchemas(temp);
@@ -380,6 +486,28 @@ const CreateSchema = (props) => {
             required: false,
             unique: false,
             entities: [],
+            routes: {
+              create: {
+                present: true,
+                protected: false,
+              },
+              read: {
+                present: true,
+                protected: false,
+              },
+              readById: {
+                present: true,
+                protected: false,
+              },
+              update: {
+                present: true,
+                protected: false,
+              },
+              delete: {
+                present: true,
+                protected: false,
+              },
+            },
           });
         }}
       >

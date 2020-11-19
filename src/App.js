@@ -19,6 +19,7 @@ import Label from "./components/utils/Label";
 const App = () => {
   const [download, setDownload] = useState(null);
   const [regenKey, setRegenKey] = useState("");
+  const [auth, setAuth] = useState(false);
   const [languages, setLanguages] = useState([
     {
       label: "Node.js",
@@ -122,6 +123,28 @@ const App = () => {
     required: false,
     unique: false,
     entities: [],
+    routes: {
+      create: {
+        present: true,
+        protected: false,
+      },
+      read: {
+        present: true,
+        protected: false,
+      },
+      readById: {
+        present: true,
+        protected: false,
+      },
+      update: {
+        present: true,
+        protected: false,
+      },
+      delete: {
+        present: true,
+        protected: false,
+      },
+    },
   });
 
   const [allSchemas, setAllSchemas] = useState([]);
@@ -177,6 +200,8 @@ const App = () => {
         setAllSchemas={setAllSchemas}
         packages={packages}
         setPackages={setPackages}
+        auth={auth}
+        setAuth={setAuth}
       ></CreateSchema>
       <SectionBreak></SectionBreak>
       <Tables
@@ -203,6 +228,7 @@ const App = () => {
               schemas[schema.schemaName].auth = schema.auth ? true : false;
             }
             schemas[schema.schemaName].entities = schema.entities;
+            schemas[schema.schemaName].routes = schema.routes;
           });
           let finalPackages = [];
           packages
