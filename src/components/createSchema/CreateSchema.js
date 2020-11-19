@@ -29,7 +29,6 @@ const CreateSchema = (props) => {
     props.setCurrentSchema({
       ...props.currentSchema,
       auth: props.auth,
-      entities: [],
     });
   }, [props.currentSchema.schemaName]);
 
@@ -104,6 +103,7 @@ const CreateSchema = (props) => {
                 checked={props.currentSchema.auth ? true : false}
                 onChange={(e) => {
                   if (e.target.checked) {
+                    toast.info("Email and password have been added!");
                     let temp = [...props.packages];
                     for (let i = 0; i < temp.length; i++) {
                       if (
@@ -337,113 +337,118 @@ const CreateSchema = (props) => {
 
       <SectionBreak></SectionBreak>
       {props.currentSchema.schemaName && props.auth ? (
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns:
-              "minmax(100px, max-content) minmax(100px, max-content) minmax(100px, max-content) minmax(100px, max-content)",
-          }}
-        >
-          <Label>GET /api/{props.currentSchema.schemaName.toLowerCase()}</Label>{" "}
-          <Label>
-            <center>-</center>
-          </Label>{" "}
-          <Label>
-            To get all {props.currentSchema.schemaName.toLowerCase()}
-          </Label>
-          <div style={{ paddingTop: "5px" }}>
-            <input
-              type="checkbox"
-              name="read"
-              id=""
-              onChange={routeProtectionHandler}
-              checked={props.currentSchema.routes.read.protected}
-            />
+        <>
+          <SubHeading>Select the routes you want to protect.</SubHeading>
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns:
+                "minmax(100px, max-content) minmax(100px, max-content) minmax(100px, max-content) minmax(100px, max-content)",
+            }}
+          >
+            <Label>
+              GET /api/{props.currentSchema.schemaName.toLowerCase()}
+            </Label>{" "}
+            <Label>
+              <center>-</center>
+            </Label>{" "}
+            <Label>
+              To get all {props.currentSchema.schemaName.toLowerCase()}
+            </Label>
+            <div style={{ paddingTop: "5px" }}>
+              <input
+                type="checkbox"
+                name="read"
+                id=""
+                onChange={routeProtectionHandler}
+                checked={props.currentSchema.routes.read.protected}
+              />
+            </div>
+            <Label>
+              GET /api/{props.currentSchema.schemaName.toLowerCase()}/:id
+            </Label>{" "}
+            <Label>
+              <center>-</center>
+            </Label>{" "}
+            <Label>
+              To get{" "}
+              {pluralize.singular(props.currentSchema.schemaName.toLowerCase())}{" "}
+              by Id
+            </Label>
+            <div style={{ paddingTop: "5px" }}>
+              <input
+                type="checkbox"
+                name="readById"
+                id=""
+                onChange={routeProtectionHandler}
+                checked={props.currentSchema.routes.readById.protected}
+              />
+            </div>
+            {props.currentSchema.schemaName !== "Users" ? (
+              <>
+                <Label>
+                  POST /api/{props.currentSchema.schemaName.toLowerCase()}
+                </Label>{" "}
+                <Label>
+                  <center>-</center>
+                </Label>{" "}
+                <Label>
+                  To create a{" "}
+                  {pluralize.singular(
+                    props.currentSchema.schemaName.toLowerCase()
+                  )}
+                </Label>
+                <div style={{ paddingTop: "5px" }}>
+                  <input
+                    type="checkbox"
+                    name="create"
+                    id=""
+                    onChange={routeProtectionHandler}
+                    checked={props.currentSchema.routes.create.protected}
+                  />
+                </div>
+              </>
+            ) : null}
+            <Label>
+              DELETE /api/{props.currentSchema.schemaName.toLowerCase()}/:id
+            </Label>{" "}
+            <Label>
+              <center>-</center>
+            </Label>{" "}
+            <Label>
+              To remove a{" "}
+              {pluralize.singular(props.currentSchema.schemaName.toLowerCase())}
+            </Label>
+            <div style={{ paddingTop: "5px" }}>
+              <input
+                type="checkbox"
+                name="delete"
+                id=""
+                onChange={routeProtectionHandler}
+                checked={props.currentSchema.routes.delete.protected}
+              />
+            </div>
+            <Label>
+              PATCH /api/{props.currentSchema.schemaName.toLowerCase()}
+            </Label>{" "}
+            <Label>
+              <center>-</center>
+            </Label>{" "}
+            <Label>
+              To update a{" "}
+              {pluralize.singular(props.currentSchema.schemaName.toLowerCase())}
+            </Label>
+            <div style={{ paddingTop: "5px" }}>
+              <input
+                type="checkbox"
+                name="update"
+                id=""
+                onChange={routeProtectionHandler}
+                checked={props.currentSchema.routes.update.protected}
+              />
+            </div>
           </div>
-          <Label>
-            GET /api/{props.currentSchema.schemaName.toLowerCase()}/:id
-          </Label>{" "}
-          <Label>
-            <center>-</center>
-          </Label>{" "}
-          <Label>
-            To get{" "}
-            {pluralize.singular(props.currentSchema.schemaName.toLowerCase())}{" "}
-            by Id
-          </Label>
-          <div style={{ paddingTop: "5px" }}>
-            <input
-              type="checkbox"
-              name="readById"
-              id=""
-              onChange={routeProtectionHandler}
-              checked={props.currentSchema.routes.readById.protected}
-            />
-          </div>
-          {props.currentSchema.schemaName !== "Users" ? (
-            <>
-              <Label>
-                POST /api/{props.currentSchema.schemaName.toLowerCase()}
-              </Label>{" "}
-              <Label>
-                <center>-</center>
-              </Label>{" "}
-              <Label>
-                To create a{" "}
-                {pluralize.singular(
-                  props.currentSchema.schemaName.toLowerCase()
-                )}
-              </Label>
-              <div style={{ paddingTop: "5px" }}>
-                <input
-                  type="checkbox"
-                  name="create"
-                  id=""
-                  onChange={routeProtectionHandler}
-                  checked={props.currentSchema.routes.create.protected}
-                />
-              </div>
-            </>
-          ) : null}
-          <Label>
-            DELETE /api/{props.currentSchema.schemaName.toLowerCase()}/:id
-          </Label>{" "}
-          <Label>
-            <center>-</center>
-          </Label>{" "}
-          <Label>
-            To remove a{" "}
-            {pluralize.singular(props.currentSchema.schemaName.toLowerCase())}
-          </Label>
-          <div style={{ paddingTop: "5px" }}>
-            <input
-              type="checkbox"
-              name="delete"
-              id=""
-              onChange={routeProtectionHandler}
-              checked={props.currentSchema.routes.delete.protected}
-            />
-          </div>
-          <Label>
-            PATCH /api/{props.currentSchema.schemaName.toLowerCase()}
-          </Label>{" "}
-          <Label>
-            <center>-</center>
-          </Label>{" "}
-          <Label>
-            To update a{" "}
-            {pluralize.singular(props.currentSchema.schemaName.toLowerCase())}
-          </Label>
-          <div style={{ paddingTop: "5px" }}>
-            <input
-              type="checkbox"
-              name="update"
-              id=""
-              onChange={routeProtectionHandler}
-              checked={props.currentSchema.routes.update.protected}
-            />
-          </div>
-        </div>
+        </>
       ) : null}
       <br />
       <SectionBreak></SectionBreak>
