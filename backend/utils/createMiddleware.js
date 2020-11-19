@@ -11,7 +11,7 @@ exports.createAuthMiddleware = (projectPath, jsonData) => {
           if(token==="" || !token){
               return res.json({message:"User not logged in."})
           }
-          const decoded = jwt.verify(token, process.env.JWT_KEY || "key")
+          const decoded = jwt.verify(token, process.env.JWT_SECRET || "key")
           req.userData = decoded
           next()
       }catch(err){

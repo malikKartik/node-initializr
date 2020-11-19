@@ -76,12 +76,52 @@ const CreateSchema = (props) => {
                 type="checkbox"
                 checked={props.currentSchema.auth ? true : false}
                 onChange={(e) => {
+                  if (e.target.checked) {
+                    let temp = [...props.packages];
+                    for (let i = 0; i < temp.length; i++) {
+                      if (
+                        temp[i].value === "bcrypt" ||
+                        temp[i].value === "jsonwebtoken"
+                      ) {
+                        temp[i] = {
+                          ...temp[i],
+                          selected: true,
+                          disabled: true,
+                        };
+                      }
+                    }
+                    console.log(temp);
+                    props.setPackages(temp);
+                  } else {
+                    let temp = [...props.packages];
+                    for (let i = 0; i < temp.length; i++) {
+                      if (
+                        temp[i].value === "bcrypt" ||
+                        temp[i].value === "jsonwebtoken"
+                      ) {
+                        temp[i] = {
+                          ...temp[i],
+                          selected: false,
+                          disabled: false,
+                        };
+                      }
+                    }
+                    console.log(temp);
+                    props.setPackages(temp);
+                  }
                   props.setCurrentSchema({
                     ...props.currentSchema,
                     auth: e.target.checked,
                   });
                 }}
               />
+              <p
+                className="input-condition"
+                style={{ marginLeft: "20px", width: "300px" }}
+              >
+                *For authentication to work you must add "email" ( required:
+                true, unique:true ) and "password"( required: true ) entity.
+              </p>
             </div>
           </>
         ) : (
@@ -160,7 +200,7 @@ const CreateSchema = (props) => {
             className="create-schema-radio"
             name="entityType"
           />
-          <p className="input-condition">*Default String</p>
+          <p className="input-condition">*Default value is String</p>
         </div>
         <Label>Required:</Label>
         <div>
@@ -234,7 +274,6 @@ const CreateSchema = (props) => {
 
       <SectionBreak></SectionBreak>
       <SectionBreak></SectionBreak>
-
       <button
         className="button"
         onClick={() => {
