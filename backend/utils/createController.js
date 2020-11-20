@@ -23,7 +23,11 @@ exports.createController = (schema, projectPath, jsonData) => {
   }`;
 
   // IMPORTS
-  if (jsonData.schemas.Users && jsonData.schemas.Users.auth) {
+  if (
+    jsonData.schemas.Users &&
+    jsonData.schemas.Users.auth &&
+    schemaName === "user"
+  ) {
     imports =
       imports +
       `const bcrypt = require("bcrypt");
