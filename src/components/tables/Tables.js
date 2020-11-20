@@ -45,6 +45,7 @@ const Tables = (props) => {
                     routes: schema.routes,
                     auth: schema.auth,
                   });
+                  props.scrollToCreateSchema();
                 }}
               />
             </SubHeading>

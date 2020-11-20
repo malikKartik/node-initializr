@@ -14,7 +14,7 @@ exports.createModel = (schema, projectPath, jsonData) => {
   jsonData.schemas[schema].entities.forEach((entity) => {
     entities =
       entities +
-      `${entity.name}:{type:${entity.type},required:${entity.required},unique:${entity.unique}},`;
+      `${entity.entityName}:{type:${entity.entityType},required:${entity.required},unique:${entity.unique}},`;
   });
   // File content model
   const fileContent = `const mongoose = require('mongoose')

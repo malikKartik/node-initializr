@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import "./App.css";
 import CentralHeading from "./components/centralHeading/CentralHeading";
 import LanguageSection from "./components/languageSection/LanguageSection";
@@ -17,6 +17,7 @@ import "react-toastify/dist/ReactToastify.css";
 import Input from "./components/utils/Input";
 import Label from "./components/utils/Label";
 const App = () => {
+  const createSchemaRef = useRef(null);
   const [download, setDownload] = useState(null);
   const [regenKey, setRegenKey] = useState("");
   const [auth, setAuth] = useState(false);
@@ -114,6 +115,35 @@ const App = () => {
       selected: false,
       disabled: false,
     },
+    {
+      title: "Multer",
+      description:
+        "Multer is a node.js middleware for handling multipart/form-data.",
+      value: "multer",
+      selected: false,
+      disabled: false,
+    },
+    {
+      title: "Morgan",
+      description: "HTTP request logger middleware for node.js",
+      value: "morgan",
+      selected: false,
+      disabled: false,
+    },
+    {
+      title: "Socket.io",
+      description: "Node.js realtime framework server",
+      value: "socket.io",
+      selected: false,
+      disabled: false,
+    },
+    {
+      title: "Lodash",
+      description: "Lodash modular utilities.",
+      value: "lodash",
+      selected: false,
+      disabled: false,
+    },
   ]);
 
   const [currentSchema, setCurrentSchema] = useState({
@@ -148,6 +178,10 @@ const App = () => {
   });
 
   const [allSchemas, setAllSchemas] = useState([]);
+
+  const scrollToCreateSchema = () => {
+    return createSchemaRef.current.scrollIntoView();
+  };
 
   const languageSelectionHandler = (value) => {
     let tempLanguages = [...languages];
@@ -193,7 +227,9 @@ const App = () => {
       ></PackageSection>
       <SectionBreak></SectionBreak>
       {/* {JSON.stringify(config.packages)} */}
+      <div ref={createSchemaRef}></div>
       <CreateSchema
+        scrollToCreateSchema={scrollToCreateSchema}
         currentSchema={currentSchema}
         setCurrentSchema={setCurrentSchema}
         allSchemas={allSchemas}
@@ -205,6 +241,7 @@ const App = () => {
       ></CreateSchema>
       <SectionBreak></SectionBreak>
       <Tables
+        scrollToCreateSchema={scrollToCreateSchema}
         allSchemas={allSchemas}
         setAllSchemas={setAllSchemas}
         currentSchema={currentSchema}
@@ -243,7 +280,7 @@ const App = () => {
           };
           console.log(finalObject);
           axios
-            .post("http://localhost:8080/ninit", finalObject)
+            .post("https://rest-initializr.herokuapp.com/ninit", finalObject)
             .then((data) => {
               toast.success("Project created!", {
                 position: "top-left",
@@ -255,7 +292,9 @@ const App = () => {
                 progress: undefined,
               });
               setRegenKey(data.data.pkey);
-              setDownload(`http://localhost:8080/${data.data.path}.zip`);
+              setDownload(
+                `https://rest-initializr.herokuapp.com/${data.data.path}.zip`
+              );
             })
             .catch((e) => {
               console.log(e);

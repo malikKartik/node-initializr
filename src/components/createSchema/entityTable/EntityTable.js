@@ -72,6 +72,7 @@ const EntityTable = (props) => {
                       unique: entity.unique,
                       entities: temp.entities,
                     });
+                    props.scrollToCreateSchema();
                   }}
                 />
               </div>

@@ -7,8 +7,9 @@ const app = express();
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 app.use(express.static(path.join(__dirname, "newProject")));
+
 app.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "http://localhost:3000");
+  res.header("Access-Control-Allow-Origin", "http://rest-initializr.surge.sh"); //FRONTEND
   res.header(
     "Access-Control-Allow-Headers",
     "Set-Cookie,Origin, X-Requested-With, Content-Type, Accept"
@@ -22,7 +23,6 @@ app.use((req, res, next) => {
 });
 
 app.post("/ninit", (req, res) => {
-  console.log("Here");
   const jsonData = req.body;
   const fs = require("fs");
   const uuid = require("uuid");
@@ -66,7 +66,7 @@ app.post("/ninit", (req, res) => {
   const createMiddleWare = require("./utils/createMiddleware");
   const createDotenv = require("./utils/createDotenv").createDotenv;
 
-  // CREATING ALL FILES(as of now just model file)
+  // CREATING ALL FILES
   Object.keys(jsonData.schemas).forEach((schema) => {
     createModel(schema, projectPath, jsonData);
     createController(schema, projectPath, jsonData);
@@ -80,7 +80,8 @@ app.post("/ninit", (req, res) => {
   createDotenv(projectPath, jsonData);
   if (jsonData.schemas.Users && jsonData.schemas.Users.auth)
     createMiddleWare.createAuthMiddleware(projectPath, jsonData);
-  const dirPath = __dirname + `/${PID}`;
+
+  // const dirPath = __dirname + `/${PID}`;
 
   const output = fs.createWriteStream(__dirname + `/newProject/${PID}.zip`);
   const archive = archiver("zip", {

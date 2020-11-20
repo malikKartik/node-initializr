@@ -25,7 +25,7 @@ exports.createPackage = (projectPath, jsonData) => {
   "author": "",
   "license": "ISC",
   "dependencies": {
-    dotenv:",
+    "dotenv":"",
     ${packages}
   }
 }`;

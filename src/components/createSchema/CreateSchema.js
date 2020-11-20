@@ -330,6 +330,7 @@ const CreateSchema = (props) => {
       </button>
       <SectionBreak></SectionBreak>
       <EntityTable
+        scrollToCreateSchema={props.scrollToCreateSchema}
         entities={props.currentSchema.entities}
         currentSchema={props.currentSchema}
         setCurrentSchema={props.setCurrentSchema}
